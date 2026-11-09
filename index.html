@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0c2542">
-<title>La Course des Énigmes B1 — 2 à 8 chevaux — Chronomètre 10, 15 ou 20 s</title>
+<title>La Course des Énigmes B1 — 2 à 8 chevaux — Chronomètre 15 s, 30 s ou 1 min</title>
 <style>
 :root{--ink:#17274b;--navy:#102448;--gold:#f8c84e;--cream:#fff7dc;--green:#28665a;--paper:#faf7ed;--border:#2a3c59;--shadow:0 6px 0 #142a3f;--logo-border:#ced8e7}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#10253f;color:#17274b;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible{outline:4px solid #e3a42c;outline-offset:3px}
@@ -137,12 +137,11 @@ body.in-race .footer{margin-top:6px}
   <section class="panel" aria-label="Défis et configuration"><div class="setup" id="setup">
    <div><h2 class="pixel">PRÉPAREZ VOS ÉQUIPES</h2><p class="intro-note">Choisissez entre 2 et 8 chevaux. Un cheval par équipe ; jouez à tour de rôle sur le même écran.</p></div><div class="horse-count-config"><div><div class="section-title">Nombre de chevaux / équipes</div><div class="horse-count-help">Ajoutez ou retirez des chevaux avant le départ (2 à 8).</div></div><div class="horse-stepper"><button type="button" id="lessHorses" class="count-btn" aria-label="Retirer un cheval" title="Moins de chevaux">−</button><output id="horseCount" aria-live="polite">4</output><button type="button" id="moreHorses" class="count-btn" aria-label="Ajouter un cheval" title="Plus de chevaux">+</button></div></div><div class="teams-form" id="teamInputs"></div>
    <div><div class="section-title">Longueur de la course</div><div class="choice-rail" id="lengthChoices"><button class="pill active" data-length="5">5 CASES</button><button class="pill" data-length="8">8 CASES</button><button class="pill" data-length="12">12 CASES</button></div></div>
-       <div class="timer-config"><div class="section-title">Chronomètre par question (10, 15 ou 20 secondes)</div>
+       <div class="timer-config"><div class="section-title">Chronomètre par question (15 secondes, 30 secondes ou 1 minute)</div>
       <div class="choice-rail" id="timerChoices" role="group" aria-label="Durée du chronomètre">
-        <button type="button" class="pill" data-timer="0" aria-pressed="false">SANS LIMITE</button>
-        <button type="button" class="pill active" data-timer="10" aria-pressed="true">10 SEC</button>
         <button type="button" class="pill" data-timer="15" aria-pressed="false">15 SEC</button>
-        <button type="button" class="pill" data-timer="20" aria-pressed="false">20 SEC</button>
+        <button type="button" class="pill active" data-timer="30" aria-pressed="true">30 SEC</button>
+        <button type="button" class="pill" data-timer="60" aria-pressed="false">1 MIN</button>
       </div><div class="timer-help">À zéro : mauvaise réponse, le cheval ne bouge pas. Le chronomètre s'arrête dès la réponse.</div>
     </div>
 <div><div class="section-title">Type de défis</div><div class="choice-rail" id="modeChoices"><button class="pill active" data-mode="mix">MÉLANGE</button><button class="pill" data-mode="choice">CHOISIR</button><button class="pill" data-mode="order">REMETTRE EN ORDRE</button><button class="pill" data-mode="pairs">ASSOCIER</button></div></div>
@@ -177,7 +176,7 @@ document.querySelectorAll('img[data-official]').forEach(el=>{
 const COLORS=['#e84147','#3688ee','#2caa70','#f2ba25','#945cd8','#f7842c','#e35faa','#25bdc9'];
 const DEFAULT_NAMES=['Équipe Rouge','Équipe Bleue','Équipe Verte','Équipe Jaune','Équipe Violette','Équipe Orange','Équipe Rose','Équipe Turquoise'];
 const $=id=>document.getElementById(id);
-const S={timerSeconds:10,timerDeadline:0,names:DEFAULT_NAMES.slice(0,4),scores:[0,0,0,0],target:5,mode:'mix',turn:0,puzzle:null,used:new Set(),answered:false,active:false,running:false,pick:null,selected:[],links:{},sound:false};
+const S={timerSeconds:30,timerDeadline:0,names:DEFAULT_NAMES.slice(0,4),scores:[0,0,0,0],target:5,mode:'mix',turn:0,puzzle:null,used:new Set(),answered:false,active:false,running:false,pick:null,selected:[],links:{},sound:false};
 let timerInterval=null;
 let runningInterval=null,runningTimeout=null,audioContext=null,celebrationTimeout=null;
 let cheerAmbience=null,dustTimer=null,demoTimeout=null;
@@ -400,7 +399,7 @@ function showWinner(leadersArg){stopTimer();S.active=false;$('questionCard').cla
 function startGame(){stopTimer();document.body.classList.add('in-race');clearWinnerAnimation();S.names=[...$('teamInputs').querySelectorAll('[data-team]')].map((input,i)=>input.value.trim().slice(0,24)||DEFAULT_NAMES[i]);S.scores=S.names.map(()=>0);S.turn=0;S.active=true;S.used=new Set();$('setup').classList.add('hidden');$('winner').classList.add('hidden');$('questionCard').classList.remove('hidden');renderTrack();newQuestion()}
 $('inGameSound').onclick=()=>{$('soundBtn').click();$('inGameSound').textContent=S.sound?'♪ Son : oui':'♪ Son : non'};
 $('inGameRestart').onclick=()=>resetToSetup(false);
-$('timerChoices').querySelectorAll('[data-timer]').forEach(btn=>{btn.onclick=()=>{S.timerSeconds=Math.max(0,Math.min(20,Number(btn.dataset.timer)));$('timerChoices').querySelectorAll('[data-timer]').forEach(b=>{const selected=b===btn;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected))})}});
+$('timerChoices').querySelectorAll('[data-timer]').forEach(btn=>{btn.onclick=()=>{S.timerSeconds=Math.max(15,Math.min(60,Number(btn.dataset.timer)));$('timerChoices').querySelectorAll('[data-timer]').forEach(b=>{const selected=b===btn;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected))})}});
 $('lessHorses').onclick=()=>setHorseCount(S.names.length-1);$('moreHorses').onclick=()=>setHorseCount(S.names.length+1);
 $('introBtn').onclick=()=>{$('splash').classList.add('hidden')};$('splashImg').onclick=()=>{$('splash').classList.add('hidden')};$('startBtn').onclick=startGame;$('nextBtn').onclick=endRoundOrNext;$('restartBtn').onclick=()=>resetToSetup(false);$('againBtn').onclick=()=>resetToSetup(false);
 $('soundBtn').onclick=()=>{S.sound=!S.sound;$('soundBtn').textContent=S.sound?'♪ Son : oui':'♪ Son : non';$('inGameSound').textContent=$('soundBtn').textContent;$('soundBtn').setAttribute('aria-pressed',String(S.sound));$('crowdToggle').textContent=S.sound?'PUBLIC : AMBIANCE ACTIVE':'PUBLIC : SILENCIEUX';$('crowdToggle').setAttribute('aria-pressed',String(S.sound));if(S.sound)startCrowd();else stopCrowd();sound(620)};
