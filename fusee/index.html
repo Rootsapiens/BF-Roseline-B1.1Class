@@ -187,7 +187,7 @@ function draw(){T+=1/60;requestAnimationFrame(draw);if(!W)return;
  for(let i=fx.length-1;i>=0;i--){const e=fx[i];e.t+=1/60;if(e.t>e.dur){fx.splice(i,1);continue}drawFx(e,sc)}
 }
 function drawRocket(x,y,col,active,i,sc,moving){const h=58*sc;
- const hit=fx.find(e=>(e.kind==='meteor'||e.kind==='ufo'||e.kind==='junk')&&Math.abs(e.x-x)<h&&e.t/e.dur>.42);
+ const hit=fx.find(e=>(e.kind==='meteor'||e.kind==='ufo'||e.kind==='junk')&&e.lane===i&&e.t/e.dur>.42);
  // team glow
  g.save();let gl=g.createRadialGradient(x,y,h*.1,x,y,h*.7);gl.addColorStop(0,col+'aa');gl.addColorStop(1,col+'00');g.fillStyle=gl;g.beginPath();g.arc(x,y,h*.7,0,7);g.fill();g.restore();
  if(active){g.save();g.strokeStyle='#ffe88a';g.lineWidth=3;g.setLineDash([8,7]);g.lineDashOffset=-T*40;g.beginPath();g.arc(x,y,h*.62,0,7);g.stroke();g.restore()}
@@ -264,7 +264,7 @@ const HAZARDS=[{kind:'meteor',text:'☄️ BONK ! Une météorite ! La fusée re
 function finish(ok,expected){if(S.answered)return;S.answered=true;stopTimer();const k=S.turn%S.n,s=sw[k];
  $('stage').querySelectorAll('button').forEach(b=>b.disabled=true);
  if(ok){S.scores[k]=Math.min(S.target,S.scores[k]+1);fx.push({kind:'swim',x:laneX(k),y:s.vy,t:0,dur:1.2});blip(200,.4,'sawtooth',.08);blip(880,.15,'triangle');toast('🔥 Allumage ! '+S.names[k]+' monte !',1400)}
- else{const h=HAZARDS[Math.floor(Math.random()*HAZARDS.length)];fx.push({kind:h.kind,x:laneX(k),y:s.vy,t:0,dur:h.kind==='meteor'?3.4:2.6});h.snd();const back=S.penalty==='recule'&&S.scores[k]>0;if(back)S.scores[k]--;toast(back?h.text.replace('reste sur place.','redescend d’une étape.'):h.text,2400)}
+ else{const h=HAZARDS[Math.floor(Math.random()*HAZARDS.length)];fx.push({kind:h.kind,x:laneX(k),y:s.vy,lane:k,t:0,dur:h.kind==='meteor'?3.4:2.6});h.snd();const back=S.penalty==='recule'&&S.scores[k]>0;if(back)S.scores[k]--;toast(back?h.text.replace('reste sur place.','redescend d’une étape.'):h.text,2400)}
  const f=$('fb');f.classList.remove('hidden');f.className='fb'+(ok?'':' bad');$('fbT').textContent=ok?'Bonne réponse !':'Pas encore…';$('fbB').textContent=expected+' '+S.puzzle.why;$('fbL').textContent='Source : '+S.puzzle.lesson;
  setTimeout(()=>$('nextBtn').disabled=false,ok?600:1400);
 }
