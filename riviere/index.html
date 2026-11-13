@@ -198,13 +198,13 @@ function drawBg(){const hor=HOR();
  const py=hor-H*.02,x0=W*.3,x1=W*.56;g.fillStyle='#5a3a22';g.fillRect(x0,py,x1-x0,H*.016);g.fillStyle='#3e2715';for(let x=x0+10;x<x1;x+=W*.035){g.fillRect(x,py,6,H*.07);g.fillRect(x+12,py,5,H*.06)}
  g.fillStyle='#6b4a2c';g.fillRect(x0,py-4,x1-x0,5);
  // kid on pier
- const st=fxOf('stone');const ph=st?st.t/st.dur:-1;drawKid(x1-W*.03,py-4,ph);
+ const st=fxOf('stone');const ph=st?st.t/st.dur:-1;const cr=fxOf('croc'),fi=fxOf('fish');drawKid(x1-W*.03,py-4,ph,cr&&cr.t/cr.dur>.4?'point':(fi&&fi.t/fi.dur>.15?'facepalm':''));
  // finish buoys
  for(let k=0;k<5;k++){const y=H*(.5+k*.1)+Math.sin(T*3+k)*3;g.fillStyle=k%2?'#ff5e4d':'#fff';g.beginPath();g.arc(island(),y,6,0,7);g.fill();g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.ellipse(island(),y+7,8,3,0,0,7);g.fill()}
 }
 function palm(x,y,h){g.save();g.strokeStyle='#5a3a22';g.lineWidth=Math.max(3,h*.08);g.lineCap='round';g.beginPath();g.moveTo(x,y);g.quadraticCurveTo(x+h*.15,y-h*.5,x+h*.1,y-h);g.stroke();g.strokeStyle='#2f7a3a';g.lineWidth=Math.max(3,h*.09);for(let k=0;k<6;k++){const a=k/6*Math.PI*2+Math.sin(T+k)*.05;g.beginPath();g.moveTo(x+h*.1,y-h);g.quadraticCurveTo(x+h*.1+Math.cos(a)*h*.35,y-h+Math.sin(a)*h*.15-h*.1,x+h*.1+Math.cos(a)*h*.6,y-h+Math.sin(a)*h*.3+h*.15);g.stroke()}g.restore()}
 let KID_HAND={x:0,y:0};
-function drawKid(x,y,ph){const s=H*.0017;const laugh=ph>.45,thr=ph>=0&&ph<.45;
+function drawKid(x,y,ph,mood){const s=H*.0017;const laugh=ph>.45,thr=ph>=0&&ph<.45,point=mood==='point',palm=mood==='facepalm';
  let lean=0,crouch=0,armA=Math.PI*.55+Math.sin(T*2)*.08,hasStone=ph>=0&&ph<.28,hop=0,bodyRot=0;
  if(thr){
   if(ph<.12){const q=ph/.12,e=q*q;lean=-.45*e;crouch=5*e;armA=Math.PI*.55-(Math.PI*.55+Math.PI*.95)*e}
@@ -212,6 +212,8 @@ function drawKid(x,y,ph){const s=H*.0017;const laugh=ph>.45,thr=ph>=0&&ph<.45;
   else{const q=(ph-.28)/.17;lean=-.45+.95*Math.min(1,q*2.5);crouch=Math.max(0,5-q*10);armA=-Math.PI*.2+Math.min(1,q*2)*1.3}
  }
  if(laugh){hop=Math.abs(Math.sin(T*14))*s*8;bodyRot=Math.sin(T*14)*.14}
+ if(point){hop=Math.abs(Math.sin(T*10))*s*5;lean=-.15;armA=-Math.PI*.1+Math.sin(T*10)*.08}
+ if(palm){lean=.35;bodyRot=Math.sin(T*6)*.06;armA=-Math.PI*.75}
  const r=lean+bodyRot;
  g.save();g.translate(x,y-hop);g.scale(s,s);g.lineCap='round';g.lineJoin='round';
  // shadow on pier
@@ -224,14 +226,16 @@ function drawKid(x,y,ph){const s=H*.0017;const laugh=ph>.45,thr=ph>=0&&ph<.45;
  // shirt
  g.fillStyle='#e23b2e';g.beginPath();g.moveTo(-10,-24);g.lineTo(-11,-42);g.lineTo(11,-42);g.lineTo(10,-24);g.fill();
  // back arm
- g.strokeStyle='#d99a66';g.lineWidth=5;g.beginPath();g.moveTo(9,-40);if(laugh){g.lineTo(8,-30);g.lineTo(0,-31)}else if(thr){g.lineTo(22,-38)}else{g.lineTo(14,-28)}g.stroke();
+ g.strokeStyle='#d99a66';g.lineWidth=5;g.beginPath();g.moveTo(9,-40);if(laugh){g.lineTo(8,-30);g.lineTo(0,-31)}else if(thr){g.lineTo(22,-38)}else if(point){g.lineTo(14,-28)}else if(palm){g.lineTo(16,-30)}else{g.lineTo(14,-28)}g.stroke();
  // head
  g.fillStyle='#f1b27a';g.beginPath();g.arc(0,-52,10,0,7);g.fill();g.fillStyle='#3b2412';g.beginPath();g.arc(0,-56,10,Math.PI,0);g.fill();g.fillRect(-10,-58,20,4);
- if(laugh){g.strokeStyle='#000';g.lineWidth=1.6;g.beginPath();g.arc(-4,-53,2.2,Math.PI,0);g.moveTo(6.2,-53);g.arc(4,-53,2.2,Math.PI,0);g.stroke();g.fillStyle='#000';g.beginPath();g.arc(0,-47,4.5,0,Math.PI);g.fill();g.fillStyle='#e55';g.beginPath();g.arc(0,-44,2,0,7);g.fill()}
+ if(point){g.fillStyle='#fff';g.beginPath();g.arc(-4,-52,2.6,0,7);g.arc(4,-52,2.6,0,7);g.fill();g.fillStyle='#000';g.beginPath();g.arc(-4.5,-52,1.4,0,7);g.arc(3.5,-52,1.4,0,7);g.fill();g.beginPath();g.ellipse(0,-45,2.6,3.4,0,0,7);g.fill()}
+ else if(palm){g.strokeStyle='#000';g.lineWidth=1.5;g.beginPath();g.moveTo(-6,-54);g.lineTo(-2,-52);g.moveTo(6,-54);g.lineTo(2,-52);g.stroke();g.beginPath();g.moveTo(-4,-45);g.quadraticCurveTo(0,-48,4,-45);g.stroke()}
+ else if(laugh){g.strokeStyle='#000';g.lineWidth=1.6;g.beginPath();g.arc(-4,-53,2.2,Math.PI,0);g.moveTo(6.2,-53);g.arc(4,-53,2.2,Math.PI,0);g.stroke();g.fillStyle='#000';g.beginPath();g.arc(0,-47,4.5,0,Math.PI);g.fill();g.fillStyle='#e55';g.beginPath();g.arc(0,-44,2,0,7);g.fill()}
  else{g.fillStyle='#000';g.beginPath();g.arc(-4,-52,1.5,0,7);g.arc(4,-52,1.5,0,7);g.fill();g.strokeStyle='#000';g.lineWidth=1.5;g.beginPath();if(thr){g.moveTo(-4,-45);g.lineTo(4,-45)}else{g.moveTo(-4,-46);g.quadraticCurveTo(0,-43,4,-46)}g.stroke();if(thr){g.strokeStyle='#000';g.lineWidth=1.4;g.beginPath();g.moveTo(-7,-56);g.lineTo(-2,-55);g.moveTo(7,-56);g.lineTo(2,-55);g.stroke()}}
  // throwing arm (front)
  const hx=-9+Math.cos(armA)*20,hy=-40+Math.sin(armA)*20;
- g.strokeStyle='#f1b27a';g.lineWidth=5;g.beginPath();g.moveTo(-9,-40);if(laugh){g.lineTo(-8,-30);g.lineTo(0,-31)}else{g.lineTo(hx,hy)}g.stroke();
+ g.strokeStyle='#f1b27a';g.lineWidth=5;g.beginPath();g.moveTo(-9,-40);if(laugh){g.lineTo(-8,-30);g.lineTo(0,-31)}else if(palm){g.lineTo(-14,-50);g.lineTo(-3,-52)}else{g.lineTo(hx,hy)}g.stroke();if(point){g.lineWidth=3;g.beginPath();g.moveTo(hx,hy);g.lineTo(hx-7,hy+3);g.stroke()}if(palm){g.fillStyle='#f1b27a';g.beginPath();g.ellipse(-3,-52,5,4,.3,0,7);g.fill()}
  if(thr&&ph>.12&&ph<.28){g.strokeStyle='rgba(255,255,255,.45)';g.lineWidth=3;g.beginPath();g.arc(-9,-40,20,armA-1.2,armA);g.stroke()}
  if(hasStone){g.fillStyle='#6b6b6b';g.beginPath();g.arc(hx,hy,3.5,0,7);g.fill();g.fillStyle='#9a9a9a';g.beginPath();g.arc(hx-1,hy-1,1.3,0,7);g.fill()}
  if(thr&&ph>.1&&ph<.3){g.fillStyle='#8fd3ff';g.beginPath();g.arc(13,-58+((ph*60)%8),1.7,0,7);g.fill()}
@@ -239,6 +243,7 @@ function drawKid(x,y,ph){const s=H*.0017;const laugh=ph>.45,thr=ph>=0&&ph<.45;
  // hand position in screen space (same transform chain)
  const lx=hx,ly=hy+16,cr=Math.cos(r),sr=Math.sin(r);
  KID_HAND={x:x+s*(cr*lx-sr*ly),y:y-hop+s*(sr*lx+cr*ly-16+crouch)};
+ if(point||palm){g.font=`900 ${Math.round(H*.026)}px system-ui`;g.strokeStyle='#000';g.lineWidth=3;g.fillStyle=point?'#ffe08a':'#fff';g.textAlign='left';const tx=point?'OH LÀ LÀ ! 🐊':'NOOON… 🤦';const dy=point?-Math.abs(Math.sin(T*10))*H*.01:0;g.strokeText(tx,x+H*.025,y-H*.12+dy);g.fillText(tx,x+H*.025,y-H*.12+dy)}
  if(laugh){g.font=`900 ${Math.round(H*.03)}px system-ui`;g.strokeStyle='#000';g.lineWidth=3;g.textAlign='left';const txt='HA HA HA !';let cx=x+H*.025;for(let k=0;k<txt.length;k++){const ch=txt[k],dy=-Math.abs(Math.sin(T*12+k*.7))*H*.012;g.fillStyle=k%3===0?'#ffe08a':'#fff';g.strokeText(ch,cx,y-H*.12+dy);g.fillText(ch,cx,y-H*.12+dy);cx+=g.measureText(ch).width}}
 }
 function draw(){T+=1/60;requestAnimationFrame(draw);if(!W)return;
@@ -298,7 +303,7 @@ function drawCroc(x,y,h,bite){g.save();g.translate(x,y);g.lineJoin='round';
  // tail
  g.fillStyle='#2f6b2a';g.beginPath();g.moveTo(h*3.6,0);g.quadraticCurveTo(h*4.6,-h*.2+Math.sin(T*6)*h*.3,h*5.2,h*.1);g.quadraticCurveTo(h*4.6,h*.5,h*3.6,h*.4);g.fill();
  // jaws (facing left)
- const open=bite*.7;if(open>.08){g.fillStyle='#7a1f2b';g.beginPath();g.moveTo(0,-h*.1);g.lineTo(-h*1.4,-h*.25);g.lineTo(-h*1.4,h*.4);g.lineTo(0,h*.5);g.fill()}g.fillStyle='#3a7d34';g.save();g.rotate(open);g.beginPath();g.moveTo(0,-h*.1);g.lineTo(-h*2.2,-h*.35);g.lineTo(-h*2.3,0);g.lineTo(0,h*.1);g.fill();
+ const open=bite*.7;if(open>.08){g.fillStyle='#1d4a1c';g.beginPath();g.moveTo(0,-h*.1);g.lineTo(-h*1.4,-h*.25);g.lineTo(-h*1.4,h*.4);g.lineTo(0,h*.5);g.fill()}g.fillStyle='#2f6b2a';g.save();g.rotate(open);g.beginPath();g.moveTo(0,-h*.1);g.lineTo(-h*2.2,-h*.35);g.lineTo(-h*2.3,0);g.lineTo(0,h*.1);g.fill();
  g.fillStyle='#fff';for(let k=0;k<6;k++){g.beginPath();g.moveTo(-h*.3-k*h*.33,0);g.lineTo(-h*.4-k*h*.33,h*.25);g.lineTo(-h*.5-k*h*.33,0);g.fill()}g.restore();
  g.save();g.rotate(-open*.6);g.fillStyle='#2f6b2a';g.beginPath();g.moveTo(0,h*.05);g.lineTo(-h*2.1,h*.05);g.lineTo(-h*2.2,h*.4);g.lineTo(0,h*.5);g.fill();g.fillStyle='#f6c1c1';g.beginPath();g.moveTo(-h*.2,h*.1);g.lineTo(-h*1.9,h*.12);g.lineTo(-h*1.9,h*.3);g.lineTo(-h*.2,h*.4);g.fill();g.fillStyle='#fff';for(let k=0;k<6;k++){g.beginPath();g.moveTo(-h*.3-k*h*.3,h*.1);g.lineTo(-h*.4-k*h*.3,-h*.12);g.lineTo(-h*.5-k*h*.3,h*.1);g.fill()}g.restore();
  // eyes
