@@ -384,7 +384,7 @@ const HAZARDS=[{kind:'croc',text:'🐊 Un crocodile ! Le nageur reste sur place.
 function finish(ok,expected){if(S.answered)return;S.answered=true;stopTimer();const k=S.turn%S.n,s=sw[k],y=laneY(k);
  $('stage').querySelectorAll('button').forEach(b=>b.disabled=true);
  if(ok){S.scores[k]=Math.min(S.target,S.scores[k]+1);fx.push({kind:'swim',x:s.vx,y,t:0,dur:1.2});splash();blip(880,.15,'triangle');toast('💨 '+S.names[k]+' avance !',1400)}
- else{const pool=HAZARDS.filter(z=>z.kind!==S.lastHaz);const h=pool[Math.floor(Math.random()*pool.length)];S.lastHaz=h.kind;fx.push({kind:h.kind,x:s.vx,y,lane:k,t:0,dur:h.kind==='stone'?3.4:2.2});h.snd();const back=S.penalty==='recule'&&S.scores[k]>0;if(back)S.scores[k]--;toast(back?h.text.replace('reste sur place.','recule d’une étape.'):h.text,2200)}
+ else{const pool=HAZARDS.filter(z=>z.kind!==S.lastHaz);const h=pool[Math.floor(Math.random()*pool.length)];S.lastHaz=h.kind;fx.push({kind:h.kind,x:s.vx,y,lane:k,t:0,dur:h.kind==='stone'?3.4:2.2});h.snd();const back=S.penalty==='recule'&&S.scores[k]>0;if(back)S.scores[k]--;void 0}
  const f=$('fb');f.classList.remove('hidden');f.className='fb'+(ok?'':' bad');$('fbT').textContent=ok?'Bonne réponse !':'Pas encore…';$('fbB').textContent=expected+' '+S.puzzle.why;$('fbL').textContent='Source : '+S.puzzle.lesson;
  setTimeout(()=>$('nextBtn').disabled=false,ok?600:1400);
 }
